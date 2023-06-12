@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.p-button:enabled:hover {
+  color: #ffffff !important;
+}
+
+.hidden-view-chart > td:nth-child(3) > button {
+  display: none;
+}

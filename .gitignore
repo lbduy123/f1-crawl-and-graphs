@@ -11,6 +11,8 @@ lerna-debug.log*
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Runtime data
+f1-graphs/crawl-data
+f1-graphs/title.json
 pids
 *.pid
 *.seed
@@ -39,6 +41,7 @@ bower_components
 build/Release
 
 # Dependency directories
+*/node_modules
 node_modules/
 jspm_packages/
 
@@ -89,7 +92,7 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
+# dist
 
 # Gatsby files
 .cache/
