@@ -12,7 +12,9 @@
   "dependencies": {
     "@types/papaparse": "^5.3.7",
     "chart.js": "^4.3.0",
+    "chartjs-adapter-moment": "^1.0.1",
     "distinct-colors": "^3.0.0",
+    "moment": "^2.29.4",
     "primeicons": "^6.0.1",
     "primereact": "^9.5.0",
     "react": "^18.2.0",

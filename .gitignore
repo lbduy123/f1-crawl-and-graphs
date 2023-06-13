@@ -11,8 +11,8 @@ lerna-debug.log*
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Runtime data
-f1-graphs/crawl-data
-f1-graphs/title.json
+# f1-graphs/crawl-data
+# f1-graphs/title.json
 pids
 *.pid
 *.seed

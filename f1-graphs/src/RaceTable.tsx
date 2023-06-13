@@ -5,6 +5,7 @@ import { InputText } from 'primereact/inputtext';
 import { TreeNode } from 'primereact/treenode';
 import { TableService } from './TableService';
 import { Button } from 'primereact/button';
+import { SelectButton } from 'primereact/selectbutton';
 import { readString } from 'react-papaparse';
 
 
@@ -21,15 +22,31 @@ interface Props {
   handleCsv: (chartData: ChartData) => void;
 }
 
+interface CategoryOption {
+  label: string;
+  value: string;
+}
+
 export default function RaceTable({ handleCsv }: Props) {
   const [nodes, setNodes] = useState<TreeNode[]>([]);
   const [globalFilter, setGlobalFilter] = useState<string>('');
+  const [category, setCategory] = useState('races');
+  const [categoryOptions] = useState<CategoryOption[]>([
+    { label: 'Races', value: 'races' },
+    { label: 'Drivers', value: 'drivers' },
+    { label: 'Teams', value: 'teams' },
+    { label: 'Fastest Laps Award', value: 'fastest laps award' }
+  ]);
+
 
   let isViewChartClicked = false;
 
   useEffect(() => {
-    TableService.getTreeTableNodes().then((data) => setNodes(data));
-  }, []);
+    if (category === 'races') TableService.getTreeTableNodes().then((data) => setNodes(data[0]));
+    if (category === 'drivers') TableService.getTreeTableNodes().then((data) => setNodes(data[1]));
+    if (category === 'teams') TableService.getTreeTableNodes().then((data) => setNodes(data[2]));
+    if (category === 'fastest laps award') TableService.getTreeTableNodes().then((data) => setNodes(data[3]));
+  }, [category]);
 
   const getHeader = () => {
     return (
@@ -50,7 +67,7 @@ export default function RaceTable({ handleCsv }: Props) {
     }
 
     return (
-      <Button type="button" onClick={handleViewChart} label="View Chart" icon="pi pi-chart-bar" style={{ color: 'blue' }} rounded />
+      <Button type="button" size='small' onClick={handleViewChart} label="View Chart" icon="pi pi-chart-bar" style={{ color: 'blue' }} rounded />
     );
   };
 
@@ -62,16 +79,19 @@ export default function RaceTable({ handleCsv }: Props) {
 
   function handleRowClick(event: TreeTableEvent): void {
     if (isViewChartClicked) {
-      const data = event.node.key?.toString().split('-')
-      const fileName = data?.[0]
-      const year = data?.[1]
-      if (year && fileName) {
-        fetch(`../../crawl-data/${year}/${fileName}.csv`)
+      const category = event.node.key?.toString().split('-')[0]
+      const year = event.node.data?.year
+      const fileName = event.node.data?.name
+      if (category && year && fileName) {
+        const filePath = category === 'Fastest Laps' ?
+          `../../crawl-data/${year}/${category}.csv` :
+          `../../crawl-data/${year}/${category}/${fileName}.csv`
+        fetch(filePath)
           .then(response => response.text()).then(csvString => {
             readString(csvString, {
               worker: true,
               complete: (results: ParseResult<string[]>) => {
-                handleCsv({ csvData: results.data, year, fileName })
+                handleCsv({ csvData: results.data, category, year, fileName })
               }
             })
           }).catch(err => console.log(err))
@@ -82,15 +102,18 @@ export default function RaceTable({ handleCsv }: Props) {
 
   return (
     <div className="card">
+      <div className="flex justify-center mb-4">
+        <SelectButton value={category} onChange={(e) => setCategory(e.value)} options={categoryOptions} />
+      </div>
       <TreeTable
         value={nodes} onRowClick={handleRowClick}
-        sortOrder={-1} removableSort sortField='name'
+        sortOrder={-1} removableSort sortField='year'
         paginator rows={5} rowsPerPageOptions={[5, 10, 25]} paginatorPosition='top'
         globalFilter={globalFilter} header={header}
-        scrollable scrollHeight='50vh'
+        scrollable scrollHeight='45vh'
         rowClassName={rowClassName} rowHover stripedRows showGridlines tableStyle={{ minWidth: '50rem' }}>
         <Column field="name" header="Name" sortable expander filter filterPlaceholder="Filter by name"></Column>
-        <Column field="type" header="Type" sortable filter filterPlaceholder="Filter by type"></Column>
+        <Column field="year" header="Year" sortable filter filterPlaceholder="Filter by year"></Column>
         <Column body={actionTemplate} />
       </TreeTable>
     </div>
