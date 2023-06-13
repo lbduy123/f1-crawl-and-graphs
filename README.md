@@ -46,3 +46,5 @@ npm run fix
 
 ## Screenshots
 
+![Search Table](screenshots/SearchTable.png?raw=true "Search Table")
+![Chart Dialog](screenshots/ChartDialog.png?raw=true "Chart Dialog")
