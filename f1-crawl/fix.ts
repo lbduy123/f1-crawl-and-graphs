@@ -16,19 +16,18 @@ fs.writeFileSync(scraper.titleFilePath, JSON.stringify(titles, null, 2), 'utf8')
 
 failUrls.map(async (url) => {
   if (url.includes('/race-result.html')) {
-    let response
-    try {
-      response = await axios.get(url)
-    } catch (err) {
-      console.log(`Error while trying to connect to ${url}`)
-      const jsonString = fs.readFileSync(scraper.titleFilePath, "utf8")
-      const titles = JSON.parse(jsonString);
-      titles.fails.push(url)
-      fs.writeFileSync(scraper.titleFilePath, JSON.stringify(titles, null, 2), 'utf8')
-      return
-    }
-    await scraper.scrapeResultByGrandPrix(url)
+    await scraper.scrapeRaceResultByGrandPrix(url)
   } else if (url.includes('/races.html')) {
     await scraper.scrapeYearlyRaceResult(url)
+  } else if (url.includes('/drivers.html')) {
+    await scraper.scrapeYearlyDriverResult(url)
+  } else if (url.includes('/drivers/')) {
+    await scraper.scrapeDriverResultByGrandPrix(url)
+  } else if (url.includes('/team.html')) {
+    await scraper.scrapeYearlyTeamResult(url)
+  } else if (url.includes('/team/')) {
+    await scraper.scrapeTeamResultByGrandPrix(url)
+  } else if (url.includes('/fastest-laps.html')) {
+    await scraper.scrapeYearlyAward(url)
   }
 })
